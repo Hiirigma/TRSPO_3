@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1145
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trspo_3", "trspo_3\trspo_3.csproj", "{15B660F6-3CAD-48BF-9FAD-B9A88D466C4E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15B660F6-3CAD-48BF-9FAD-B9A88D466C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B660F6-3CAD-48BF-9FAD-B9A88D466C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B660F6-3CAD-48BF-9FAD-B9A88D466C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B660F6-3CAD-48BF-9FAD-B9A88D466C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C49AA311-0D92-4B70-A29E-EF29CD8CBC80}
+	EndGlobalSection
+EndGlobal
