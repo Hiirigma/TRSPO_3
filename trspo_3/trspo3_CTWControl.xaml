@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="trspo_3.trspo3_CTWControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+             Name="MyToolWindow" mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="400" MinHeight="100" MinWidth="100"
+             >
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" MinHeight="100" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBox x:Name="Info"
+                     FontStyle="Normal"
+                     FontSize="20"
+                     Foreground="Black"
+                     Background="White"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     Grid.Row="1" 
+                     Grid.Column="1"
+                     MinWidth="0"
+                     MaxWidth="{Binding RelativeSource={RelativeSource AncestorType=Window},Path=ActualWidth}"
+                     MinHeight="0"
+                     MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window},Path=ActualHeight}"
+                     Margin="10,0,6,37" Grid.RowSpan="2">
+        </TextBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="1">
+            <Button x:Name="button" Content="Update" ClipToBounds="True" Margin="0,8,19,5" Click="Button_Click" HorizontalAlignment="Right" Width="51" Height="24" RenderTransformOrigin="0.5,0.5" >
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
