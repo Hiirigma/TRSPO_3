@@ -43,7 +43,7 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidtrspo3_CTWPackageCmdSet" id="trspo3_CTWCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_TOOLS_EXT_CUST"/>
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <ButtonText>trspo3_CTW</ButtonText>

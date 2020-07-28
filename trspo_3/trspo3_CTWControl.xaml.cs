@@ -4,14 +4,11 @@
     using System.Windows;
     using System.Windows.Controls;
 
-    //-----------------My Add-----------------------------------------------------------------
     using System;
     using System.Text;
     using Microsoft.VisualStudio.Shell;
     using System.IO;
     using System.Linq;
-    using System.Collections.Generic;
-    //-----------------End My Add-------------------------------------------------------------
 
     public partial class trspo3_CTWControl : UserControl
     {
@@ -30,93 +27,21 @@
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Default event handler naming pattern")]
 
 
-        private string DeleteConst(string data)
-        {
-            int n = data.Length;
-            string res = "";
-
-            // Flags to indicate that single line and multpile line comments
-            // have started or not.
-            bool m_cmt = false;
-            int count = 0;
-            // Traverse the given program
-            for (int i = 0; i < n; i++)
-            {
-                if (data[i] == '"')
-                {
-                    count++;
-                    i++;
-                    while (data[i] != ';')
-                    {
-                        //if (data[i] == '\\' && data[i + 1] == '\n')
-                        //{
-                        //    i++;
-                        //    continue;
-                        //}
-                        if (data[i] == '"')
-                        {
-                            count++;
-                        }
-                        if (data[i] == ';' && count % 2 == 0)
-                        {
-                            break;
-                        }
-                        if (data[i] == '\n' && data[i-1] != '\\')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-
-
-                }
-                if (data[i] == '\'')
-                {
-                    count++;
-                    i++;
-                    while (data[i] != ';')
-                    {
-                        //if (data[i] == '\\' && data[i + 1] == '\n')
-                        //{
-                        //    i++;
-                        //    continue;
-                        //}
-                        if (data[i] == '\'')
-                        {
-                            count++;
-                        }
-                        if (data[i] == ';' && count%2 == 0)
-                        {
-                            break;
-                        }
-                        if (data[i] == '\n' && data[i-1] != '\\')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                res += data[i];
-            }
-            return res;
-        }
-
-        private string removeComments(ref int count_key, ref int count_comments, string prgm)
+        private void removeCommentsConst(ref int count_key, ref int count_comments, string prgm)
         {
             char d;
             char c;
             string res = "";
             for (int i = 0; i < prgm.Length; i++)
             {
-                //c 
                 c = prgm[i];
                 if (c == '/')
                 {
-                    //d
                     i++;
                     d = prgm[i];
                     if (d == '*')
                     {
+                        count_comments++;
                         i++;
                         c = prgm[i];
                         i++;
@@ -130,7 +55,8 @@
                         }
                     }
                     else if (d == '/')
-                    {        
+                    {
+                        count_comments++;
                         do
                         {
                             if (d == '\\' && prgm[i] == '\n')
@@ -144,15 +70,9 @@
                         i--;
                         continue;
                     }
-                    else
-                    {
-                        //res += c;
-                        //res += d;
-                    }
                 }
                 else if (c == '\'' || c == '"')
                 {
-                    //res += c;
                     i++;
                     d = prgm[i];
                     while (i < prgm.Length - 1)
@@ -170,151 +90,18 @@
                         }
                         d = prgm[i];
                     }
-                    //res += d;
                 }
                 else
                 {
                     res += c;
                 }
             }
-            CountWords(ref count_key, ref res);
-            return res;
+            GetWords(ref count_key, ref res);
         }
         
-        //private string removeComments(ref int count_key,ref int count_comments, string prgm)
-        //{
-
-        //    string res = "";
-
-        //    // Flags to indicate that single line and multpile line comments
-        //    // have started or not.
-        //    bool s_cmt = false;
-        //    bool m_cmt = false;
-        //    bool o_str = false;
-        //    bool d_str = false;
-        //    int str_cnt = 0;
-        //    int n = prgm.Length;
-
-        //    // Traverse the given program
-        //    for (int i = 0; i < n; i++)
-        //    {
-        //        if (prgm[i] == '"')
-        //        {
-        //            o_str = true;
-        //            str_cnt++;
-        //        }
-        //        // If single line comment flag is on, then check for end of it
-        //        if (m_cmt == true && prgm[i] == '\n')
-        //        {
-        //            if (o_str == true && prgm[i-1] != '\\' && str_cnt%2 == 0)
-        //            {
-        //                str_cnt = 0;
-        //                o_str = false;
-        //            }
-        //            continue;
-        //        }
-        //        else if (s_cmt == true && prgm[i-1] == '\\'  && prgm[i] == '\n')
-        //        {
-        //            continue;
-        //        }
-        //        else if (s_cmt == true && prgm[i - 1] == '\\' && prgm[i] != '\n')
-        //        {
-        //            m_cmt = false;
-        //            s_cmt = false;
-        //            continue;
-        //        }
-        //        else if (s_cmt == true && prgm[i] == '\n')
-        //        {
-        //            s_cmt = false;
-        //        }
-        //        // If multiple line comment is on, then check for end of it
-        //        else if (m_cmt == true && prgm[i] == '*' && prgm[i + 1] == '/')
-        //        {
-        //            m_cmt = false;
-        //            i++;
-        //        }
-        //        // If this character is in a comment, ignore it
-        //        else if (s_cmt || m_cmt)
-        //        {
-        //            continue;
-        //        }
-
-        //        // Check for beginning of comments and set the approproate flags
-        //        else
-        //        {
-        //            if (prgm[i] == '/' && prgm[i + 1] == '/')
-        //            {
-        //                count_comments++;
-        //                s_cmt = true;
-        //                i++; 
-        //            }
-        //            else
-        //            {
-        //                if (prgm[i] == '/' && prgm[i + 1] == '*')
-        //                {
-        //                    count_comments++;
-        //                    m_cmt = true;
-        //                    i++;
-        //                }
-        //                // If current character is a non-comment character, append it to res
-        //                else if (prgm[i] != '\t')
-        //                {
-        //                   res += prgm[i];      
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    res = DeleteConst(res);
-        //    CountWords(ref count_key, ref res);
-        //    return res;
-        //}
-
-        private bool CheckInStr(String data, int st_pos, bool reverse)
+        private void GetWords(ref int cnt_key_words, ref String data)
         {
-            int len = data.Length;
-            if (reverse == false)
-            {
-                for (int i = st_pos; i < len; i++)
-                {
-                    if (data[i] == ';' || data[i] == ')' || data[i] == '>' || data[i] == '=')
-                    {
-                        if (CheckInStr(data,st_pos,true) == false)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                    if (data[i] == '"' || data[i] == '\'' || (data[i] == '\\' && data[i + 1] == '\n'))
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = st_pos; i >= 0; i--)
-                {
-                    if (data[i] == ';' || data[i] == '(' || data[i] == '<')
-                    {
-                            return false;
-                    }
-                    if (data[i] == '"' || data[i] == '\'' || (data[i] == '\\' && data[i+1] == '\n'))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        
-        private void CountWords(ref int amount_key_words, ref String data)
-        {
-            String[] KeyWords = {
+            String[] keys = {
                             "bool","char","int","long", "signed", "unsigned","float",
                             "double", "int8_t", "int16_t", "int32_t", "int64_t","uint8_t",
                             "uint16_t","uint32_t","uint64_t", "char16_t", "char32_t","struct","short",
@@ -330,79 +117,60 @@
                            };
 
 
-            foreach (String key in KeyWords)
+            foreach (String key in keys)
             {
-
                 String str = data;
-                while (true)
+                int j = 0;
+                for (int i = str.IndexOf(key);  i != -1; i = str.IndexOf(key))
                 {
-
-                    int idx = str.IndexOf(key);
-                    if (idx == -1)
+                    j = i + key.Length;
+                    if (i - 1 >= 0 && ((str[i - 1] >= 'a' && str[i - 1] <= 'z')   ||
+                        (str[i - 1] >= '0' && str[i - 1] <= '9') ||
+                        (str[i - 1] == '_') ||
+                        (str[i - 1] == '\'') ||
+                        (str[i - 1] == '\"')))
                     {
-                        break;
+                        str = str.Substring(j);
+                        continue;
                     }
-
-                    
-                    if (idx - 1 >= 0 && ((str[idx - 1] >= 'a' && str[idx - 1] <= 'z')   ||
-                        (str[idx - 1] >= '0' && str[idx - 1] <= '9') ||
-                        (str[idx - 1] == '_') ||
-                        (str[idx - 1] == '\'') ||
-                        (str[idx - 1] == '\"')))
+ 
+                    if (j < str.Length &&
+                        ((str[j] >= 'a' && str[j] <= 'z') ||
+                        (str[j] >= '0' && str[j] <= '9') ||
+                        (str[j] == '\'') ||
+                        (str[j] == '\"')))
                     {
-                        str = str.Substring(idx + key.Length);
+                        str = str.Substring(j);
                         continue;
                     }
 
-                    int idx_plus = idx + key.Length;
-                    if (idx_plus < str.Length &&
-                        ((str[idx_plus] >= 'a' && str[idx_plus] <= 'z') ||
-                        (str[idx_plus] >= '0' && str[idx_plus] <= '9') ||
-                        (str[idx_plus] == '\'') ||
-                        (str[idx_plus] == '\"')))
-                    {
-                        str = str.Substring(idx + key.Length);
-                        continue;
-                    }
-
-                    //if (CheckInStr(str, idx, false) == false)
-                    //{
-                    //    amount_key_words++;
-                    //}
-                    amount_key_words++;
-                    str = str.Substring(idx_plus);
-
-
+                    cnt_key_words++;
+                    str = str.Substring(j);
                 }
             }
         }
 
 
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            int counter = 0;
-            int line_func_name = -1;
-            int save_line_bkt = 0;
+            int cnt = 0;
+            int func_start_pos = 0;
             int comments_count = 0;
             int buf_int = 0;
             int lines_Empty = 0;
             int global_lines_Empty = 0;
-            int global_field_count = 0;
-            int amount_key_words = 0;
+            int global_comment_count = 0;
+            int global_key_word = 0;
+            int cnt_key_words = 0;
             int field_count = 0;
             int name_space_count = 0;
             int template_count = 0;
             int class_count = 0;
-            bool symb_found = false;
-            bool found = false;
-            bool found_scob = false;
-            String func_code = "";
+            bool fnd_flag = false;
+            bool fnd_sc_flag = false;
             String all_code = "";
-            String[] TextCode;
-            String result = "";
-            int start_pos = 0;
+            String[] SourceTextFile;
+            String out_res = "";
             int end_pos = 0;
 
             EnvDTE.DTE dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
@@ -413,200 +181,136 @@
                 return;
             }
 
-            TextCode = File.ReadAllLines(System.IO.Path.GetFullPath(dte.ActiveDocument.FullName));
-            result = "Document name :: " + dte.ActiveDocument.FullName + Environment.NewLine + Environment.NewLine;
+            SourceTextFile = File.ReadAllLines(System.IO.Path.GetFullPath(dte.ActiveDocument.FullName));
+            out_res = "Document name :: " + dte.ActiveDocument.FullName + Environment.NewLine + Environment.NewLine;
 
-            for (int i = 0; i < TextCode.Length; ++i)
+            for (int i = 0; i < SourceTextFile.Length; ++i)
             {
                 all_code = "";
-                for (int j = 0; j < TextCode[i].Length; ++j)
+                for (int j = 0; j < SourceTextFile[i].Length; j++)
                 {
-                    if (TextCode[i][j] == '{')
+                    if (SourceTextFile[i][j] == '{' && cnt <= 0)
                     {
-                        if (counter > 0)
-                        {
-                            counter++;
-                            continue;
-                        }
-                        // searching for for first not empty symbol
-                        // if k == j - not found
-                        // k < j - found
+                        fnd_flag = false;
+                        fnd_sc_flag = false;
                         for (int k = 0; k < j; k++)
                         {
                             buf_int = k;
-                            if (TextCode[i][k] != ' ' && TextCode[i][k] != '\t')
-                            {      
+                            if (SourceTextFile[i][k] != ' ' && SourceTextFile[i][k] != '\t')
+                            {
                                 break;
                             }
                         }
 
-                        // if k==j then line with func_name is earlier
-                        line_func_name = i - (((buf_int == j) == true) ? 1 : 0);
-
-                        // searching for ')' in line_func_name before '{' and '\n'
-                        found = false;
-                        found_scob = false;
-                        for (int l = 0; l < TextCode[line_func_name].Length && TextCode[line_func_name][l] != '{'; ++l)
+                        if (buf_int == j)
                         {
-                            if (TextCode[line_func_name][l] == '(')
-                            {
-                                save_line_bkt = line_func_name;
-                                found_scob = true;
-                            }
-                            if (TextCode[line_func_name][l] == ')')
-                            {
-                                found = true;
-                                break;
-                            }
+                            func_start_pos = i - 1;
                         }
-                        if (!found_scob && found)
+                        else
                         {
-                            for (int h = 0; h < 10; h++)
+                            func_start_pos = i;
+                        }
+
+                        for (int l = 0; fnd_flag == false && l < SourceTextFile[func_start_pos].Length && SourceTextFile[func_start_pos][l] != '{'; l++)
+                        {
+                            fnd_sc_flag = SourceTextFile[func_start_pos][l] == '(' ? true : fnd_sc_flag;
+                            fnd_flag = SourceTextFile[func_start_pos][l] == ')' ? true : fnd_flag;
+                        }
+
+                        if (fnd_sc_flag == false && fnd_flag == true)
+                        {
+                            while (fnd_sc_flag == false && func_start_pos >= 0)
                             {
-                                line_func_name--;
-                                for (int l = 0; l < TextCode[line_func_name].Length && TextCode[line_func_name][l] != '{'; ++l)
+                                func_start_pos--;
+                                for (int l = 0; l < SourceTextFile[func_start_pos].Length && SourceTextFile[func_start_pos][l] != '{'; l++)
                                 {
-                                    if (TextCode[line_func_name][l] == '(')
-                                    {
-                                        save_line_bkt = line_func_name;
-                                        found_scob = true;
-                                    }
-                                }
-                                if (found_scob)
-                                {
-                                    break;
+                                    fnd_sc_flag = SourceTextFile[func_start_pos][l] == '(' ? true : fnd_sc_flag;
                                 }
                             }
                         }
 
-                        if (TextCode[line_func_name].StartsWith("namespace"))
+                        if (SourceTextFile[func_start_pos].StartsWith("namespace"))
                         {
                             name_space_count++;
                             continue;
                         }
 
-                        if (TextCode[line_func_name].StartsWith("class"))
+                        if (SourceTextFile[func_start_pos].StartsWith("class"))
                         {
                             class_count++;
                             continue;
                         }
 
-                        if (TextCode[line_func_name].StartsWith("template"))
+                        if (SourceTextFile[func_start_pos].StartsWith("template"))
                         {
                             template_count++;
                             continue;
                         }
-
-                        if (counter == 0)
-                        {
-                            start_pos = i;
-                            if (TextCode[i].StartsWith("{"))
-                            {
-                                start_pos--;
-                            }
-                        }
-                        counter++;
+                        cnt++;
                     }
-                    else if (TextCode[i][j] == '}')
+                    else if (SourceTextFile[i][j] == '}')
                     {
-                        if (counter == 1)
+                        if (cnt == 1)
                         {
                             end_pos = i + 1;
                             lines_Empty = 0;
-                            amount_key_words = 0;
+                            cnt_key_words = 0;
                             comments_count = 0;
-                            symb_found = false;
-                            start_pos = line_func_name;
-                            for (j = 0; j < TextCode[line_func_name].Length; j++)
-                            {
-                                char c;
-                                c = TextCode[line_func_name][j];
-                                if (c == '{')
-                                {
-                                    break;
-                                }
 
-                                if (c != '\t' && c != ' ' && symb_found == false)
-                                {
-                                    symb_found = true;
-                                }
-                            }
-
-                            for (int z = start_pos ; z < end_pos; z++)
+                            for (int z = func_start_pos; z < end_pos; z++)
                             {
-                                if (TextCode[z] == "" || TextCode[z] == "\t" || TextCode[z] == "\n")
+                                if (SourceTextFile[z] == "" || SourceTextFile[z] == "\t" || SourceTextFile[z] == "\n")
                                 {
                                     lines_Empty++;
                                     global_lines_Empty++;
                                 }
                                 else
                                 {
-                                    all_code += TextCode[z];
+                                    all_code += SourceTextFile[z];
                                     if (all_code[all_code.Length - 1] != '\n')
                                     {
                                         all_code += '\n';
                                     }
                                 }
                             }
-                            
-                            //all_code = all_code.Remove(all_code.Length - 1, 1);
-                            func_code = removeComments(ref amount_key_words,ref comments_count, all_code);
-                            while (func_code[func_code.Length-1] == '\n')
-                            {
-                                func_code = func_code.Remove(func_code.Length - 1, 1);
-                            }
-                            
-                            field_count = func_code.Count(f => f == '\n') + 1;
-                            global_field_count += field_count;
-                            result += func_code + Environment.NewLine +
+                            removeCommentsConst(ref cnt_key_words, ref comments_count, all_code);
+                            field_count = all_code.Count(f => f == '\n');
+                            global_comment_count += comments_count;
+                            global_key_word += cnt_key_words;
+                            out_res += all_code + Environment.NewLine +
                                 "Number of fields :: " + field_count.ToString() + Environment.NewLine +
                                 "Number of empty fields :: " + lines_Empty.ToString() + Environment.NewLine +
                                 "Number of comments :: " + comments_count.ToString() + Environment.NewLine +
-                                "Number of keywords :: " + amount_key_words.ToString() + Environment.NewLine + 
-                                Environment.NewLine;          
+                                "Number of keywords :: " + cnt_key_words.ToString() + Environment.NewLine +
+                                Environment.NewLine;
+
                         }
-                        if (counter > 0)
+                        if (cnt > 0)
                         {
-                            counter--;
+                            cnt--;
+                        }
+                    }
+                    else
+                    {
+                        if (SourceTextFile[i][j] == '{')
+                        {
+                            cnt++;
                         }
                     }
                 }
             }
 
-
-            all_code = "";
-            lines_Empty = 0;
-            for (int z = 0; z < TextCode.Length; z++)
-            {
-
-                if (TextCode[z] == "" || TextCode[z] == "\t" || TextCode[z] == "\n")
-                {
-                    lines_Empty++;
-                }
-                else
-                {
-                    all_code += TextCode[z];
-                    all_code += '\n';
-                }
-            }
-
-            all_code = all_code.Remove(all_code.Length - 1, 1);
-            func_code = removeComments(ref amount_key_words, ref comments_count, all_code);
-            while (func_code[func_code.Length - 1] == '\n')
-            {
-                func_code = func_code.Remove(func_code.Length - 1, 1);
-            }
-
-            result += Environment.NewLine +
+            out_res += Environment.NewLine +
                 "All code information :: " + Environment.NewLine +
-                "Number of fields :: " + global_field_count.ToString() + Environment.NewLine +
+                "Number of fields :: " + SourceTextFile.Length.ToString() + Environment.NewLine +
                 "Number of empty fields :: " + global_lines_Empty.ToString() + Environment.NewLine +
-                "Number of comments :: " + comments_count.ToString() + Environment.NewLine +
+                "Number of comments :: " + global_comment_count.ToString() + Environment.NewLine +
+                "Number of keywords :: " + global_key_word.ToString() + Environment.NewLine +
                 "Number of namespaces :: " + name_space_count.ToString() + Environment.NewLine +
                 "Number of template :: " + template_count.ToString() + Environment.NewLine +
                 "Number of classes :: " + class_count.ToString() + Environment.NewLine;
 
-            Info.Text = result;
+            Info.Text = out_res;
         }
     }
 
